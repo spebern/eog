@@ -49,7 +49,7 @@ class RecordApp:
         pygame.display.update()
         self.screen = screen
 
-    def run_session(self):
+    def run(self):
         for label in self._labels:
             self.run_trial(label)
         time.sleep(2)
@@ -71,6 +71,7 @@ class RecordApp:
                 raise "invalid label: {}".format(label)
             self._current_label = label
             pygame.display.update()
+        self._recorder.read_sample_win()
         time.sleep(1.1)
 
 

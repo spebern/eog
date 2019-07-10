@@ -19,7 +19,7 @@ class Recorder:
 
         self.amp = gtec.GUSBamp()
         self.amp.set_sampling_frequency(
-            self.fs, [True for i in range(16)], (5, 500, FS, 8), (48, 52, FS, 4)
+            self.fs, [True for i in range(16)], (0.00, 30, FS, 8), (48, 52, FS, 4)
         )
         self.amp.start()
 
@@ -41,7 +41,7 @@ class Recorder:
         """
         return self.read_sample_win()
 
-    def read_sample_win(self, label):
+    def read_sample_win(self, label=None):
         num_samples = self.win_duration * self.fs
         sample_win = np.zeros((num_samples, self.num_channels))
 
@@ -65,10 +65,10 @@ class Recorder:
     def record_label(self, label):
         self.labels.put(label)
 
-    def _record(self, label):
+    def _record(self):
         while not self._stop:
             label = self.labels.get()
-            signals = self.read_sample_win()
+            signals = self.read_sample_win(label)
 
             np.savez(
                 "training_data/{}_{}.npz".format(label, time.time()),
@@ -81,38 +81,51 @@ def main():
     recorder = Recorder(win_duration=6)
     raw_data = recorder.get_data()
 
+    # fig = plt.figure(figsize=(12, 10))
+    # ax1 = fig.add_subplot(6, 1, 1)
+    # ax1.set_title("EOG signal channel 1")
+    # ax1.set_xlabel("samples")
+    # ax1.set_ylabel("voltage")
+    # ax1.plot(raw_data[2 * FS :, 0])
+
+    # ax2 = fig.add_subplot(6, 1, 2)
+    # ax2.set_title("EOG signal channel 2")
+    # ax2.set_xlabel("samples")
+    # ax2.set_ylabel("voltage")
+    # ax2.plot(raw_data[2 * FS :, 1])
+
+    # ax3 = fig.add_subplot(6, 1, 3)
+    # ax3.set_title("EOG signal channel 3")
+    # ax3.set_xlabel("samples")
+    # ax3.set_ylabel("voltage")
+    # ax3.plot(raw_data[2 * FS :, 2])
+
+    # ax4 = fig.add_subplot(6, 1, 4)
+    # ax4.set_title("EOG signal channel 4")
+    # ax4.set_xlabel("samples")
+    # ax4.set_ylabel("voltage")
+    # ax4.plot(raw_data[2 * FS :, 3])
+
+    # ax2 = fig.add_subplot(6, 1, 5)
+    # ax2.set_title("EOG signal channel 2 - channel 1")
+    # ax2.set_xlabel("samples")
+    # ax2.set_ylabel("voltage")
+    # ax2.plot(raw_data[2 * FS :, 1] - raw_data[2 * FS :, 0])
+
+    # ax2 = fig.add_subplot(6, 1, 6)
+    # ax2.set_title("EOG signal channel 4 - channel 3")
+    # ax2.set_xlabel("samples")
+    # ax2.set_ylabel("voltage")
+    # ax2.plot(raw_data[2 * FS :, 3] - raw_data[2 * FS :, 2])
+
     fig = plt.figure(figsize=(12, 10))
-    ax1 = fig.add_subplot(6, 1, 1)
-    ax1.set_title("EOG signal channel 1")
-    ax1.set_xlabel("samples")
-    ax1.set_ylabel("voltage")
-    ax1.plot(raw_data[2 * FS :, 0])
-
-    ax2 = fig.add_subplot(6, 1, 2)
-    ax2.set_title("EOG signal channel 2")
-    ax2.set_xlabel("samples")
-    ax2.set_ylabel("voltage")
-    ax2.plot(raw_data[2 * FS :, 1])
-
-    ax3 = fig.add_subplot(6, 1, 3)
-    ax3.set_title("EOG signal channel 3")
-    ax3.set_xlabel("samples")
-    ax3.set_ylabel("voltage")
-    ax3.plot(raw_data[2 * FS :, 2])
-
-    ax4 = fig.add_subplot(6, 1, 4)
-    ax4.set_title("EOG signal channel 4")
-    ax4.set_xlabel("samples")
-    ax4.set_ylabel("voltage")
-    ax4.plot(raw_data[2 * FS :, 3])
-
-    ax2 = fig.add_subplot(6, 1, 5)
+    ax2 = fig.add_subplot(2, 1, 1)
     ax2.set_title("EOG signal channel 2 - channel 1")
     ax2.set_xlabel("samples")
     ax2.set_ylabel("voltage")
     ax2.plot(raw_data[2 * FS :, 1] - raw_data[2 * FS :, 0])
 
-    ax2 = fig.add_subplot(6, 1, 6)
+    ax2 = fig.add_subplot(2, 1, 2)
     ax2.set_title("EOG signal channel 4 - channel 3")
     ax2.set_xlabel("samples")
     ax2.set_ylabel("voltage")

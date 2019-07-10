@@ -2,10 +2,9 @@ import fire
 from recorder import Recorder
 import random
 import numpy as np
-from enum import Enum
 from pydub import AudioSegment
 from pydub.playback import play
-from preprocessing import Preprocessor
+from features import Preprocessor
 import time
 import os
 from record_animation import RecordApp
@@ -17,16 +16,12 @@ from mlxtend.feature_selection import ExhaustiveFeatureSelector as EFS
 from sklearn import svm
 import matplotlib.pyplot as plt
 import matplotlib
+from config import *
+from utils import save_model, read_training_data
+from sklearn.ensemble import RandomForestClassifier
 
 
 training_data_dir = "training_data/"
-
-
-class EyeMovement(Enum):
-    RIGHT = "right"
-    LEFT = "left"
-    UP = "up"
-    DOWN = "down"
 
 
 def gen_labels(trials, label_types):
@@ -74,7 +69,37 @@ class App(object):
         app.run()
 
     def train(self):
-        pass
+        signals, labels = read_training_data()
+
+        features = []
+        for i in range(len(signals)):
+            features.append(self._preprocessor.extract_features(signals[i]))
+        features = np.array(features)
+
+        # clf = LinearDiscriminantAnalysis()
+        # clf = SVM()
+        clf = RandomForestClassifier(n_estimators=100, max_depth=18, random_state=0)
+
+        # fsl = EFS(
+        #     clf, min_features=4, max_features=4, scoring="accuracy", print_progress=True
+        # )
+        fsl = SFS(
+            clf,
+            k_features=24,
+            forward=True,
+            floating=False,
+            verbose=2,
+            scoring="accuracy",
+            n_jobs=-1,
+            cv=4,
+        )
+
+        fsl.fit(features, labels)
+        # print("Best accuracy score: %.2f" % fsl.best_score_)
+        # print("Best subset (indices):", fsl.best_idx_)
+        # print("Best subset (corresponding names):", fsl.best_feature_names_)
+
+        # save_model(fsl)
 
     def evaluate(self, trials=10):
         pass

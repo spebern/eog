@@ -6,6 +6,7 @@ import screeninfo
 import pygame
 import re
 import os
+from config import *
 
 
 def get_screen_width_and_height():
@@ -59,19 +60,21 @@ class RecordApp:
     def run_trial(self, label):
         if self._current_label != label:
             self.screen.fill(black)
-            if label == "up":
+            if label == EyeMovement.UP:
                 self.screen.blit(arrow_up, up_pos)
-            elif label == "down":
+            elif label == EyeMovement.DOWN:
                 self.screen.blit(arrow_down, down_pos)
-            elif label == "right":
+            elif label == EyeMovement.RIGHT:
                 self.screen.blit(arrow_right, right_pos)
-            elif label == "left":
+            elif label == EyeMovement.LEFT:
                 self.screen.blit(arrow_left, left_pos)
+            elif label == EyeMovement.MID:
+                pass
             else:
                 raise "invalid label: {}".format(label)
             self._current_label = label
             pygame.display.update()
-        self._recorder.read_sample_win()
+        self._recorder.record_label(label)
         time.sleep(1.1)
 
 
@@ -81,6 +84,6 @@ def main():
 
 
 if __name__ == "__main__":
-    labels = ["up", "down", "left", "right"]
+    labels = ["mid", "up", "down", "left", "right"]
     app = RecordApp(None, labels)
     app.run_session()

@@ -86,15 +86,12 @@ class Amplifier(object):
             the configuration of the amplifier
 
         """
-        pass
 
     def start(self):
         """Make the amplifier ready for delivering data."""
-        pass
 
     def stop(self):
         """Stop the amplifier."""
-        pass
 
     def get_data(self):
         """Get data from the amplifier.
@@ -143,7 +140,6 @@ class Amplifier(object):
         [[16.066789627075195, 'baz']]
 
         """
-        pass
 
     def get_channels(self):
         """Return the list of channel names.

@@ -13,17 +13,10 @@ def read_training_data():
     for filename in sorted(os.listdir(TRAINING_DATA_DIR)):
         fullpath = os.path.join(TRAINING_DATA_DIR, filename)
         data = np.load(fullpath)
-        # if data["label"] != "fist" and data["label"] != "normal":
-        #     continue
+        if data["label"] == "mid":
+            continue
         labels.append(data["label"])
         signals.append(data["signals"])
-        # import math
-        # bla = np.array(signals)
-        # for s in bla.flatten():
-        #     if math.isnan(s):
-        #         print(fullpath)
-        #         import sys
-        #         sys.exit()
     signals = np.array(signals)
     return signals, labels
 

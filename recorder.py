@@ -4,7 +4,6 @@ import queue
 import time
 import gtec
 import matplotlib.pyplot as plt
-from preprocessing import Preprocessor
 from config import *
 
 
@@ -19,7 +18,7 @@ class Recorder:
 
         self.amp = gtec.GUSBamp()
         self.amp.set_sampling_frequency(
-            self.fs, [True for i in range(16)], (0.00, 30, FS, 8), (48, 52, FS, 4)
+            self.fs, [True for i in range(16)], None, (48, 52, FS, 4)
         )
         self.amp.start()
 
@@ -78,8 +77,14 @@ class Recorder:
 
 
 def main():
-    recorder = Recorder(win_duration=6)
+    recorder = Recorder(win_duration=2)
     raw_data = recorder.get_data()
+
+    raw_data = recorder.get_data()
+
+    bp = BandPassFilter()
+    for channel in range(raw_data.shape[1]):
+        raw_data[:, channel] = bp(raw_data[:, channel])
 
     # fig = plt.figure(figsize=(12, 10))
     # ax1 = fig.add_subplot(6, 1, 1)
@@ -117,19 +122,18 @@ def main():
     # ax2.set_xlabel("samples")
     # ax2.set_ylabel("voltage")
     # ax2.plot(raw_data[2 * FS :, 3] - raw_data[2 * FS :, 2])
-
     fig = plt.figure(figsize=(12, 10))
     ax2 = fig.add_subplot(2, 1, 1)
     ax2.set_title("EOG signal channel 2 - channel 1")
     ax2.set_xlabel("samples")
     ax2.set_ylabel("voltage")
-    ax2.plot(raw_data[2 * FS :, 1] - raw_data[2 * FS :, 0])
+    ax2.plot(raw_data[:, 1] - raw_data[:, 0])
 
     ax2 = fig.add_subplot(2, 1, 2)
     ax2.set_title("EOG signal channel 4 - channel 3")
     ax2.set_xlabel("samples")
     ax2.set_ylabel("voltage")
-    ax2.plot(raw_data[2 * FS :, 3] - raw_data[2 * FS :, 2])
+    ax2.plot(raw_data[:, 3] - raw_data[:, 2])
 
     plt.tight_layout()
     plt.show()

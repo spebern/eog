@@ -5,8 +5,7 @@ import numpy as np
 from pydub import AudioSegment
 from pydub.playback import play
 from features import Preprocessor
-import time
-import os
+from preprocessing import BandPassFilter
 from record_animation import RecordApp
 from sklearn.model_selection import train_test_split
 from sklearn import svm
@@ -37,10 +36,8 @@ def gen_labels(trials, label_types):
     relaxtion_label = label_types[0]
     labels_with_relaxation = []
     for label in labels:
-        for _ in range(5):
-            labels_with_relaxation.append(relaxtion_label)
-        for _ in range(5):
-            labels_with_relaxation.append(label)
+        labels_with_relaxation.append(relaxtion_label)
+        labels_with_relaxation.append(label)
     return labels_with_relaxation
 
 
@@ -72,20 +69,24 @@ class App(object):
         signals, labels = read_training_data()
 
         features = []
+        bp = BandPassFilter()
         for i in range(len(signals)):
+            for channel in range(signals[i].shape[1]):
+                signals[i, :, channel] = bp(signals[i, :, channel])
             features.append(self._preprocessor.extract_features(signals[i]))
         features = np.array(features)
 
-        # clf = LinearDiscriminantAnalysis()
+        clf = LinearDiscriminantAnalysis()
         # clf = SVM()
-        clf = RandomForestClassifier(n_estimators=100, max_depth=18, random_state=0)
+        # clf = RandomForestClassifier(n_estimators=100, max_depth=18, random_state=0)
 
         # fsl = EFS(
-        #     clf, min_features=4, max_features=4, scoring="accuracy", print_progress=True
+        #     clf, min_features=1, max_features=5, scoring="accuracy", print_progress=True,
+        #     n_jobs=-1
         # )
         fsl = SFS(
             clf,
-            k_features=24,
+            k_features=5,
             forward=True,
             floating=False,
             verbose=2,

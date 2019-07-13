@@ -1,4 +1,3 @@
-from math import pi, sin, cos
 import numpy as np
 import time
 import sys
@@ -40,7 +39,6 @@ class RecordApp:
     def __init__(self, recorder, labels):
         self._recorder = recorder
         self._labels = labels
-        self._current_label = None
         pygame.init()
         screen_width, screen_height = get_screen_width_and_height()
         screen = pygame.display.set_mode(
@@ -58,22 +56,20 @@ class RecordApp:
         sys.exit()
 
     def run_trial(self, label):
-        if self._current_label != label:
-            self.screen.fill(black)
-            if label == EyeMovement.UP:
-                self.screen.blit(arrow_up, up_pos)
-            elif label == EyeMovement.DOWN:
-                self.screen.blit(arrow_down, down_pos)
-            elif label == EyeMovement.RIGHT:
-                self.screen.blit(arrow_right, right_pos)
-            elif label == EyeMovement.LEFT:
-                self.screen.blit(arrow_left, left_pos)
-            elif label == EyeMovement.MID:
-                pass
-            else:
-                raise "invalid label: {}".format(label)
-            self._current_label = label
-            pygame.display.update()
+        self.screen.fill(black)
+        if label == EyeMovement.UP:
+            self.screen.blit(arrow_up, up_pos)
+        elif label == EyeMovement.DOWN:
+            self.screen.blit(arrow_down, down_pos)
+        elif label == EyeMovement.RIGHT:
+            self.screen.blit(arrow_right, right_pos)
+        elif label == EyeMovement.LEFT:
+            self.screen.blit(arrow_left, left_pos)
+        elif label == EyeMovement.MID:
+            pass
+        else:
+            raise "invalid label: {}".format(label)
+        pygame.display.update()
         self._recorder.record_label(label)
         time.sleep(1.1)
 
